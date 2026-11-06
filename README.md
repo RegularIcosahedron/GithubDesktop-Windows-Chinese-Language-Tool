@@ -43,10 +43,16 @@
 
 ## 快速开始
 
+方式一（最简单）：双击 `apply.bat`。
+
+方式二（命令行）：
+
 ```powershell
 # 在仓库目录内打开 PowerShell
 powershell -ExecutionPolicy Bypass -File .\ghd-zh.ps1 -Action Apply
 ```
+
+还原：双击 `restore.bat`，或执行 `.\ghd-zh.ps1 -Action Restore`。
 
 完成后**完全退出** GitHub Desktop（托盘图标也要退出），再重新打开即可看到中文。
 

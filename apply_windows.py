@@ -343,10 +343,19 @@ def cmd_apply(app_arg, dict_path, dry):
     print('版本: %s' % ver)
     print('词典: %s (%d + %d 条)' % (dict_path, len(d['main.js']), len(d['renderer.js'])))
 
+    # 幂等：若已有备份，永远以备份的英文原版为基线重新汉化，
+    # 避免在已汉化文件上反复叠加替换。
+    bdir = backup_dir(ver_dir)
+    use_backup = all(os.path.isfile(os.path.join(bdir, f))
+                     for f in ('main.js', 'renderer.js'))
+    if use_backup:
+        print('基线: 备份原版 (%s)' % bdir)
+
     outputs, report = {}, {}
     for fname in ('main.js', 'renderer.js'):
         path = os.path.join(res, fname)
-        src = io.open(path, encoding='utf-8').read()
+        source_path = os.path.join(bdir, fname) if use_backup else path
+        src = io.open(source_path, encoding='utf-8').read()
         out, stat = apply_exact(src, d[fname])
         lookup, conflicts = build_lookup(d, fname)
         out = apply_variants(out, lookup, stat)
@@ -371,7 +380,6 @@ def cmd_apply(app_arg, dict_path, dry):
         print('dry-run：未写入任何文件。')
         return 0
 
-    bdir = backup_dir(ver_dir)
     os.makedirs(bdir, exist_ok=True)
     for fname, out in outputs.items():
         src_path = os.path.join(res, fname)

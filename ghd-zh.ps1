@@ -34,10 +34,7 @@ $running = Get-Process GitHubDesktop -ErrorAction SilentlyContinue
 if ($running -and $Action -ne 'Status') {
     Write-Host '[提示] GitHub Desktop 正在运行。' -ForegroundColor Yellow
     Write-Host '       改文件不会影响已打开的窗口，但需要完全退出后重新启动才能看到中文。' -ForegroundColor Yellow
-    if (-not $DryRun) {
-        $answer = Read-Host '继续？(Y/n)'
-        if ($answer -and $answer.Trim().ToLower() -ne 'y') { return }
-    }
+    Write-Host '       脚本会先备份原版，可随时用 -Action Restore 还原。' -ForegroundColor Yellow
 }
 
 $pyArgs = @('-I', (Join-Path $root 'apply_windows.py'),
